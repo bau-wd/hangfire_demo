@@ -1,5 +1,6 @@
 using Hangfire;
 using Hangfire.SqlServer;
+using hangfire_demo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,9 @@ builder.Services.AddHangfire(configuration => configuration
 
 // Add the processing server as IHostedService
 builder.Services.AddHangfireServer();
+
+
+builder.Services.AddScoped<DemoJobs, DemoJobs>();
 
 var app = builder.Build();
 
