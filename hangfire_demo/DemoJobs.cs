@@ -23,5 +23,33 @@ namespace hangfire_demo
             Console.WriteLine("Finished Email Send Job");
         }
 
+        public async Task LongRunningJob()
+        {
+            Console.WriteLine("Start LongRunningJob");
+
+            // long running job, e.g. database cleanup
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("do sth (long running job without cToken)");
+                await Task.Delay(1000);
+            }
+
+            Console.WriteLine("Finished LongRunningJob");
+        }
+
+        public async Task LongRunningJob(CancellationToken cancellationToken)
+        {
+            Console.WriteLine("Start LongRunningJob (with cancellationToken)");
+
+            // long running job, e.g. database cleanup
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("do sth (long running job with cToken)");
+                await Task.Delay(1000, cancellationToken);
+            }
+
+            Console.WriteLine("Finished LongRunningJob (with cancellationToken)");
+        }
+
     }
 }
