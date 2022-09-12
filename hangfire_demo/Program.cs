@@ -1,4 +1,5 @@
 using Hangfire;
+using Hangfire.Console;
 using Hangfire.SqlServer;
 using hangfire_demo;
 
@@ -18,15 +19,24 @@ builder.Services.AddHangfire(configuration => configuration
     .UseRecommendedSerializerSettings()
     .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
     {
-        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5), // use higher value for huge workloads!
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(1),
         QueuePollInterval = TimeSpan.Zero,
         UseRecommendedIsolationLevel = true,
         DisableGlobalLocks = true
-    }));
+    })
+    .UseConsole() // used by hangfire.console
+);
 
 // Add the processing server as IHostedService
-builder.Services.AddHangfireServer();
+//builder.Services.AddHangfireServer();
+
+
+builder.Services.AddHangfireServer(options =>
+{
+    options.Queues = new[] { "default", "test_queue" };
+    options.WorkerCount = 1;
+});
 
 
 builder.Services.AddScoped<DemoJobs, DemoJobs>();
@@ -34,6 +44,8 @@ builder.Services.AddScoped<DemoJobs, DemoJobs>();
 var app = builder.Build();
 
 app.UseHangfireDashboard();
+
+ConfigureRecurringJobs.Configure(builder.Configuration);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

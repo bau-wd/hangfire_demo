@@ -49,5 +49,25 @@ namespace hangfire_demo.Controllers
             return randomId;
         }
 
+        [HttpPost("[action]")]
+        public ActionResult HangfireConsole()
+        {
+            _backgroundJobs.Enqueue(() => _demoJobs.HangfireConsole(null)); // hangfire will inject the current performContext
+            return Ok();
+        }
+
+        [HttpPost("[action]")]
+        public ActionResult ExceptionJob()
+        {
+            _backgroundJobs.Enqueue(() => _demoJobs.ExceptionJob(null)); // hangfire will inject the current performContext
+            return Ok();
+        }
+
+        [HttpPost("[action]")]
+        public ActionResult QueueExampleJob()
+        {
+            _backgroundJobs.Enqueue(() => _demoJobs.QueueExampleJob("test_queue")); // hangfire will inject the current performContext
+            return Ok();
+        }
     }
 }
